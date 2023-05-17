@@ -93,11 +93,11 @@ boutonDecroissant.addEventListener("click", function() {
 });
 
 // bouton filtrage par description.
-const boutonDisponibilité = document.querySelector(".btn-dispo");
+const boutonDisponibilite = document.querySelector(".btn-dispo");
 
-boutonDisponibilité.addEventListener("click", function() {
+boutonDisponibilite.addEventListener("click", function() {
     const piecesFiltrees = pieces.filter(function(piece) {
-        return piece.disponibilité === true;
+        return piece.disponibilite === true;
     });
     document.querySelector(".fiches").innerHTML = "";
     genererPieces(piecesFiltrees);
