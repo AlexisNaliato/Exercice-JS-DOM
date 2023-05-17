@@ -32,7 +32,7 @@ function genererPieces(pieces){
         descriptionElement.innerText = article.description ?? "Pas de description pour le moment.";
 
         const stockElement = document.createElement("p");
-        stockElement.innerText = article.disponibilité ? "En stock" : "Rupture de stock";
+        stockElement.innerText = article.disponibilite ? "En stock" : "Rupture de stock";
 
         const avisBouton = document.createElement("button");
         avisBouton.dataset.id = article.id;
