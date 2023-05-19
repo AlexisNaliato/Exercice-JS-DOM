@@ -1,8 +1,24 @@
-// Récuperation des pieces depuis une API-HTTP
-import { ajoutListenersAvis } from "./avis.js";
+import { ajoutListenersAvis, ajoutListenerEnvoyerAvis, afficherAvis} from "./avis.js";
 
-const reponse =  await fetch("http://localhost:8081/pieces");
-const pieces = await reponse.json();
+// Récupération des pièces éventuellement stockées dans le localStorage
+let pieces = window.localStorage.getItem("pieces");
+
+if(pieces === null) {
+    // Récuperation des pieces depuis une API-HTTP
+    const reponse =  await fetch("http://localhost:8081/pieces");
+    pieces = await reponse.json();
+
+    // Transformation des pieces en JSON
+    const valeurPieces = JSON.stringify(pieces);
+
+    // Stockage des informations dans le local storage
+    window.localStorage.setItem("pieces",valeurPieces);
+}else{
+   pieces = JSON.parse(pieces);
+}
+
+// on appel la fonction pour ajouter le Listener au formulaire.
+ajoutListenerEnvoyerAvis();
 
 function genererPieces(pieces){
     for (let i = 0; i < pieces.length; i++) {
@@ -51,77 +67,91 @@ function genererPieces(pieces){
 
     }
     ajoutListenersAvis();
+   
 }
 // Efface le contenu de la balise body et donc l’écran
 genererPieces(pieces);
+
+for(let i = 0; i <pieces.length; i++) {
+    const id = pieces[i].id;
+    const avisJSON = window.localStorage.getItem(`avis-piece-${id}`);
+    const avis = JSON.parse(avisJSON);
+
+    if(avis !== null) {
+        const pieceElement = document.querySelector(`aritcle[data-id="${id}"]`);
+        afficherAvis(piecesElement, avis)
+    }
+}
+
+
 
 //gestion des boutons
 // bouton de tri des prix par ordre croissant.
 const boutonTrier = document.querySelector(".btn-trier");
 
-boutonTrier.addEventListener("click",function() {
-    const piecesOrdonnees = Array.from(pieces);
-    piecesOrdonnees.sort(function(a, b){
-        return a.prix - b.prix;
-    });
-// Efface le contenu de la page pour le regenerer avec les nouveaux parametres.    
-    document.querySelector(".fiches").innerHTML = "";
-    genererPieces(piecesOrdonnees);
+    boutonTrier.addEventListener("click",function() {
+        const piecesOrdonnees = Array.from(pieces);
+        piecesOrdonnees.sort(function(a, b){
+            return a.prix - b.prix;
+        });
+    // Efface le contenu de la page pour le regenerer avec les nouveaux parametres.    
+        document.querySelector(".fiches").innerHTML = "";
+        genererPieces(piecesOrdonnees);
 });
 
 // bouton filtrage prix abordables au en dessous de 35 euros.
 const boutonFiltrer = document.querySelector(".btn-filtrer");
 
-boutonFiltrer.addEventListener("click", function() {
-    const piecesFiltrees = pieces.filter(function(piece) {
-        return piece.prix <= 35;
-    });
-    document.querySelector(".fiches").innerHTML = "";
-    genererPieces(piecesFiltrees);
+    boutonFiltrer.addEventListener("click", function() {
+        const piecesFiltrees = pieces.filter(function(piece) {
+            return piece.prix <= 35;
+        });
+        document.querySelector(".fiches").innerHTML = "";
+        genererPieces(piecesFiltrees);
 });
 
 // bouton tri des prix par ordre decroissant.  
 const boutonDecroissant = document.querySelector(".btn-trierReverse");
 
-boutonDecroissant.addEventListener("click", function() {
-    const piecesDesordonnees = Array.from(pieces);
-    piecesDesordonnees.sort(function(a, b) {
-        return b.prix - a.prix;
-    });
-    document.querySelector(".fiches").innerHTML = "";
-    genererPieces(piecesDesordonnees);
+    boutonDecroissant.addEventListener("click", function() {
+        const piecesDesordonnees = Array.from(pieces);
+        piecesDesordonnees.sort(function(a, b) {
+            return b.prix - a.prix;
+        });
+        document.querySelector(".fiches").innerHTML = "";
+        genererPieces(piecesDesordonnees);
 });
 
 // bouton filtrage par description.
 const boutonDisponibilite = document.querySelector(".btn-dispo");
 
-boutonDisponibilite.addEventListener("click", function() {
-    const piecesFiltrees = pieces.filter(function(piece) {
-        return piece.disponibilite === true;
-    });
-    document.querySelector(".fiches").innerHTML = "";
-    genererPieces(piecesFiltrees);
+    boutonDisponibilite.addEventListener("click", function() {
+        const piecesFiltrees = pieces.filter(function(piece) {
+            return piece.disponibilite === true;
+        });
+        document.querySelector(".fiches").innerHTML = "";
+        genererPieces(piecesFiltrees);
 });
 
 // supprimer les elements qui sont au dessus de 35 euros.
 const noms = pieces.map(piece => piece.nom);
-for(let i = pieces.length -1 ; i >= 0; i--) {
-    if(pieces[i].prix > 35){
-        noms.splice(i,1);
-    }
+    for(let i = pieces.length -1 ; i >= 0; i--) {
+        if(pieces[i].prix > 35){
+            noms.splice(i,1);
+        }
 }
 console.log(noms);
 
 // creation de l'en-tete.
 const pElement = document.createElement('p');
 pElement.innerText = "Pièces abordables :";
-//creation de la liste des pieces abordables.
-const abordablesElements = document.createElement('ul');
-// Ajout de chaque nom a la liste.
-for(let i=0; i < noms.length ; i++){
-    const nomElement = document.createElement('li');
-    nomElement.innerText = noms[i];
-    abordablesElements.appendChild(nomElement)
+    //creation de la liste des pieces abordables.
+    const abordablesElements = document.createElement('ul');
+    // Ajout de chaque nom a la liste.
+    for(let i=0; i < noms.length ; i++){
+        const nomElement = document.createElement('li');
+        nomElement.innerText = noms[i];
+        abordablesElements.appendChild(nomElement)
 }
 
 //Ajout de l'en-tete puis de la liste au bloc résultats filtres.
@@ -165,4 +195,10 @@ inputPrixMax.addEventListener('input', function(){
     genererPieces(piecesFiltrees);
 })
 
+// Ajout du Listener pour mettre à jour des données du localStorage
+const boutonMettreAJour = document.querySelector(".btn-maj");
+boutonMettreAJour.addEventListener("click", function() {
+    window.localStorage.removeItem("pieces");
+
+});
 
