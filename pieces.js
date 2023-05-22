@@ -1,4 +1,4 @@
-import { ajoutListenersAvis, ajoutListenerEnvoyerAvis, afficherAvis} from "./avis.js";
+import { ajoutListenersAvis, ajoutListenerEnvoyerAvis, afficherAvis, afficherGraphiqueAvis} from "./avis.js";
 
 // Récupération des pièces éventuellement stockées dans le localStorage
 let pieces = window.localStorage.getItem("pieces");
@@ -164,7 +164,7 @@ const nomsDisponibles = pieces.map(piece => piece.nom)
 const prixDisponibles = pieces.map(piece => piece.prix) 
 
 for(let i = pieces.length -1; i >= 0; i--) {
-    if(pieces[i].disponibilité === false) {
+    if(pieces[i].disponibilite === false) {
         nomsDisponibles.splice(i,1)
         prixDisponibles.splice(i,1)
     }
@@ -201,4 +201,5 @@ boutonMettreAJour.addEventListener("click", function() {
     window.localStorage.removeItem("pieces");
 
 });
+await afficherGraphiqueAvis();
 

@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<title>Les Bonnes Pièces</title>
 		<link rel="stylesheet" href="styles.css">
+		<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 		<script type="module" src="pieces.js"></script>
 	</head>
 	<body>
@@ -41,6 +42,13 @@
 				</form>
 					<h3>Données</h3>
 					<button class="btn-maj">Mettre à jour les pièces</button>
+			
+					<h3>Aperçus des Avis</h3>
+					<canvas id="graphique-avis" width="300" height="300"></canvas>
+			
+					<h3>Avis pieces</h3>
+					<canvas id="pieces-avis" width="300" height="300"></canvas>
+				
 			</section>
 
 			<!-- Fiches produits -->
